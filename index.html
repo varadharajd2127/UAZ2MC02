@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zoology E-Learning Network</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+  }
+
+  .logo img {
+    width: 90px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .title {
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 10px;
+  }
+
+  .course {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .paper {
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+
+  .card {
+    background: #f7f9fc;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background: #0b57d0;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #0842a0;
+  }
+
+  .loader {
+    margin: 20px auto;
+    border: 5px solid #ddd;
+    border-top: 5px solid #0b57d0;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .student-name {
+    font-weight: bold;
+    margin: 15px 0 10px;
+    font-size: 16px;
+  }
+
+  .links a {
+    display: block;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .front { background: #28a745; }
+  .index { background: #6f42c1; }
+  .bonafide { background: #fd7e14; }
+  .interleaf { background: #dc3545; }
+
+  .error {
+    margin-top: 15px;
+    color: #d32f2f;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Logo -->
+  <div class="logo">
+    <a href="https://azbtweb.wixsite.com/zen-dna" target="_blank">
+      <img src="https://static.wixstatic.com/media/e98a4d_b935ab57540b41bdb320efa88b5e69b1~mv2.png">
+    </a>
+  </div>
+
+  <!-- Header -->
+  <div class="title">ZOOLOGY E-LEARNING NETWORK</div>
+  <div class="subtitle">Departmental Nurturing Academics</div>
+
+  <div class="course">UG - 1ST YEAR</div>
+  <div class="paper">UAZ2MC02 - RECORD BOOK</div>
+
+  <!-- Search Card -->
+  <div class="card">
+    <input id="dept" placeholder="Enter Dept No (25-UAZ-001)">
+    <button onclick="search()">Search</button>
+
+    <div id="result"></div>
+  </div>
+
+</div>
+
+<script>
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQwUayHkLPPlZsvWgN1GrxmH_V-okgHtgp3_xcJCWOryoT4V-TcjLt0YRU9mxnCUnTNjaCt8ZdM5c5b/pub?output=csv";
+
+const INDEX_LINK =
+"https://drive.google.com/file/d/17z8q6lKWUUroPbbh9A5eJSHZ-kAXHKBT/view?usp=drivesdk";
+
+const BONAFIDE_LINK =
+"https://drive.google.com/file/d/1KxuAzC9P1tAi1sxya9wc6BXsUqgD2IE6/view?usp=drivesdk";
+
+const INTERLEAF_LINK =
+"https://drive.google.com/file/d/1rszKWQFzm8jgzCamX0eTRK0z3BGpZHkq/view?usp=drivesdk";
+
+async function search() {
+  const deptNo = document.getElementById("dept").value.trim().toUpperCase();
+  const result = document.getElementById("result");
+
+  result.innerHTML = `<div class="loader"></div>`;
+
+  const response = await fetch(CSV_URL);
+  const text = await response.text();
+  const rows = text.split("\n").slice(1);
+
+  let found = false;
+
+  for (let row of rows) {
+    const cols = row.split(",");
+    if (cols[0]?.trim() === deptNo) {
+      found = true;
+      result.innerHTML = `
+        <div class="student-name">${cols[1]}</div>
+        <div class="links">
+          <a class="front" href="${cols[2]}" target="_blank">📄 Front Page</a>
+          <a class="index" href="${INDEX_LINK}" target="_blank">📑 Index</a>
+          <a class="bonafide" href="${BONAFIDE_LINK}" target="_blank">📝 Bonafide</a>
+          <a class="interleaf" href="${INTERLEAF_LINK}" target="_blank">📘 Interleaf</a>
+        </div>
+      `;
+      break;
+    }
+  }
+
+  if (!found) {
+    result.innerHTML = `<div class="error">❌ Department number not found</div>`;
+  }
+}
+</script>
+
+</body>
+</html>
